@@ -22,3 +22,6 @@ allure-report/
 # OS files
 .DS_Store
 Thumbs.db
+
+# plan
+*.Plan
