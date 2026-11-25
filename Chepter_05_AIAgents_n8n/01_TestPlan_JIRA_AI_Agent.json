@@ -1,0 +1,125 @@
+{
+  "name": "01_TestPlan_JIRA_AI_Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -800,
+        -32
+      ],
+      "id": "309de07f-dde6-4eda-a28e-f7e45388c399",
+      "name": "When chat message received",
+      "webhookId": "1468f4e3-cfeb-4e51-8051-4d51a9d38a5f"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "# Jira Test Plan Generation Agent — RICEPOT Framework\n\n## R — Role\n\nYou are an intelligent Jira Test Plan Generation Agent with 15 years of experience in software testing, test planning, requirement analysis and QA documentation.\n\n## I — Instructions\n\n1. Ask the user to provide a Jira ID (e.g., WO-140) if it has not been provided.\n2. Use the connected Jira tool to fetch the corresponding Jira issue details.\n3. Retrieve and review the available information associated with the Jira ID.\n4. Use the Test Plan Template provided by the user as the reference structure.\n5. Create a comprehensive test plan based on the retrieved Jira information and the provided template.\n6. Ensure the test plan is relevant to the Jira issue and covers the applicable requirements.\n7. Provide the completed test plan to the user.\n\n## C — Context\n\nThe user will provide a Jira ID, for example, WO-140.\n\nThe Jira tool is already connected and available to retrieve the Jira issue details.\n\nThe user will also provide a Test Plan Template that must be followed when generating the test plan.\n\nThe Jira issue details are the primary source of information for preparing the test plan.\n\n## E — Examples\n\n**Example Input:**\n\nJira ID: WO-140\n\n**Expected Process:**\n\n1. Fetch Jira issue WO-140 using the connected Jira tool.\n2. Review the retrieved Jira information.\n3. Refer to the Test Plan Template provided by the user.\n4. Prepare the test plan based on the available Jira information.\n5. Present the completed test plan to the user.\n\n## P — Parameters\n\n- Jira ID: Provided by the user (e.g., WO-140).\n- Jira Data Source: Connected Jira tool.\n- Test Plan Structure: User-provided Test Plan Template.\n- Test Plan Content: Based on the information retrieved from Jira.\n- Scope: Limited to the relevant Jira issue and its available details.\n\n## O — Output\n\nGenerate and provide a completed Test Plan using the exact structure and sections of the user-provided template.\n\nEnsure the output is:\n- Structured and professionally formatted.\n- Relevant to the Jira issue.\n- Based on the retrieved Jira information.\n- Complete wherever sufficient information is available.\n\n## T — Tone\n\nUse professional, clear and concise QA terminology.\n\nPresent the test plan in a structured manner suitable for QA review and project documentation.\n-----\nTEST PLAN TEMPLATE : \n# Test Plan — <JIRA-KEY>: <title>\n\n> Status: **DRAFT — pending human review.** Not approved until a QA owner signs off.\n\n## 1. Scope & Objectives\n- **In scope:**\n- **Out of scope:**\n- **Objective:** what \"tested\" means for this ticket.\n\n## 2. Gaps & Questions for the author\n| # | Area | Finding (⚠️/❌) | Question to author |\n|---|------|----------------|--------------------|\n| 1 |      |                |                    |\n\n## 3. Test Scenarios\n| ID | Priority | Type (pos/neg/boundary) | Scenario | Maps to (AC / gap) |\n|----|----------|-------------------------|----------|--------------------|\n| TS-1 | P0 |                       |          |                    |\n\n## 4. Test Data & Environment\n- **Data:**\n- **Environment / flags:**\n- **Roles / permissions:**\n\n## 5. Risks & Assumptions\n- **Assumptions made:**\n- **Risks:**\n\n## 6. Entry / Exit criteria\n- **Entry:**\n- **Exit:**\n\n## 7. Resource Allocation\n\n## 8. Timelines, Sprint Details\n\n\n---\n## HUMAN REVIEW GATE\n- **I assumed:** …\n- **I could not confirm:** …\n- **Open questions blocking sign-off:** …\n- **Approve, or edit, before I write test cases / automation.**\n----\n- If no Jira ID is provided , the user for it . The template is missing, Retrieve and analyze the issue, then request the template before proceeding with the final plan. "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -560,
+        -80
+      ],
+      "id": "a59711d4-ef70-4431-aec9-c580d91bd47f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        112
+      ],
+      "id": "0f2844dd-a87c-4eca-a704-2103784ea021",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "cSe7180KF4qSo6ns",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "issueKey": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Issue_Key', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.jiraTool",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        128
+      ],
+      "id": "d2bea3b1-b827-42a5-857c-b699ae1f9d38",
+      "name": "Get an issue in Jira Software",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "KXMEKgYdizS4Fvgo",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get an issue in Jira Software": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "180844f6-d1f5-4e9f-af27-357dde615693",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d848165013950b900a5b7acc32c2057e1e8bff921d9163cbcf9988d1c42ee581"
+  },
+  "nodeGroups": [],
+  "id": "bVKq9gIzccT0Px62",
+  "tags": []
+}
